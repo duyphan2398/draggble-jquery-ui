@@ -1,4 +1,6 @@
 $( document ).ready(function() {
+    let currentDragBarTop = 0;
+
     // Initial call
     resizeWindow();
 
@@ -10,43 +12,47 @@ $( document ).ready(function() {
         var a = position;
 
         $('div.main-top').height(position);
-        $('div.main-bottom').height($("#mainContent").height() - (position + 20));
+        $('div.main-bottom').height($("#drag-container").height() - (position));
     };
 
-    $( "#draggableH" ).draggable({ 
+    $( "#drag-bar" ).draggable({ 
         axis: "y",
-        start: function(start) {
+        containment : ".drag-container",
+        cursor: 'row-resize',
+        distance: 100,
+        // grid: [ 0, 100 ],
+        start: function(start, ui) {   
             calculatepercent(start.target.offsetTop);
             console.log('Start: '+ start.target.offsetTop);
         },
-        drag: function(drag) {
+        drag: function(drag, ui) {
             calculatepercent(drag.target.offsetTop);
             console.log('Drag: '+ drag.target.offsetTop);
         },
-        stop: function(stop) {
+        stop: function(stop, ui) {
             calculatepercent(stop.target.offsetTop);
             console.log('Stop: '+ stop.target.offsetTop);
         }
     });
 
     function resizeWindow(){
-        $("#mainContent").height($("body").height() - $(".header").height());
+        $("#drag-container").height($("body").height() - $(".header").height() - $(".footer").height());
+        var height = (($("body").height() - $(".header").height() - $(".footer").height())/2);
+        
+        currentDragBarTop = height;
 
-        var height = (($("body").height() - $(".header").height())/2)-10;
 
-        $("#draggableH").css({
+        $("#drag-bar").css({
            'top'	: height,
            'min-height': '10px'
         });
 
         $(".main-top").css({
            'height'	: height,
-           'min-height': '10px'
         });
 
         $(".main-bottom").css({
            'height'	: height,
-           'min-height': '10px'
         });
     };
 });
