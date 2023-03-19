@@ -4,8 +4,7 @@ $( document ).ready(function() {
     const topComponent = $('div.main-top');
     const bottomComponent =  $('div.main-bottom');
 
-
-    const maxHeightDragContainer = $("body").height() - $(".header").height() - $(".footer").height();
+    const maxHeightDragContainer = $("body").height() - $(".header").height() - $(".footer").height() + dragBar.height();
     
 
     let levelOfDraggingPositions = [
@@ -27,7 +26,7 @@ $( document ).ready(function() {
      */
     function calculatepercent(position) {
         topComponent.height(position);
-        bottomComponent.height(dragContainer.height() - position);
+        bottomComponent.height(maxHeightDragContainer - position);
     };
 
     /**
@@ -50,18 +49,19 @@ $( document ).ready(function() {
         let newTopHeight = newBottomHeight = newDragBarTop = 0;
         if( top < centerOfLevelOfDraggingPosition ) {
             newTopHeight = levelOfDraggingPosition.top;
-            newBottomHeight = dragContainer.height() - levelOfDraggingPosition.top
+            newBottomHeight = maxHeightDragContainer - levelOfDraggingPosition.top
             newDragBarTop = levelOfDraggingPosition.top;
         } else {
             if(levelOfDraggingPosition.bottom === maxHeightDragContainer) {
                 newTopHeight  = levelOfDraggingPosition.bottom - dragBar.height();
-                newBottomHeight = dragContainer.height() - (Math.floor(levelOfDraggingPosition.bottom - dragBar.height()));
+                newBottomHeight = maxHeightDragContainer - levelOfDraggingPosition.bottom;
                 newDragBarTop = levelOfDraggingPosition.bottom - dragBar.height();
             }else {
                 newTopHeight  = levelOfDraggingPosition.bottom;
-                newBottomHeight = dragContainer.height() - (Math.floor(levelOfDraggingPosition.bottom));
+                newBottomHeight = maxHeightDragContainer - levelOfDraggingPosition.bottom;
                 newDragBarTop = levelOfDraggingPosition.bottom;
             }
+
         }
 
         topComponent.height(newTopHeight);
@@ -71,10 +71,14 @@ $( document ).ready(function() {
         });
     }
 
+    /**
+     * Set origin height for drag container, top component, bottom component and position of dragBar
+     */
     function resizeWindow(){
-        dragContainer.height(maxHeightDragContainer);
+        
         var originalComponentHeight = (maxHeightDragContainer)/2;
 
+        dragContainer.height(maxHeightDragContainer);
         topComponent.height(originalComponentHeight);
         bottomComponent.height(originalComponentHeight);
         dragBar.css({
@@ -82,6 +86,9 @@ $( document ).ready(function() {
          });
     };
 
+    /**
+     * Init Drag bar
+     */
     dragBar.draggable({ 
         axis: "y",
         containment : ".drag-container",
@@ -110,6 +117,7 @@ $( document ).ready(function() {
     $(window).resize(function() {
         resizeWindow()
     });
+
 
     function init() {
         // Initial call
