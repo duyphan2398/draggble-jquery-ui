@@ -27,20 +27,18 @@ body,html{
 
 .main-top{
 	background: red;
-    height: 50%;
 }
 
 .main-bottom{
 	background: blue;
-    height: 50%;
 }
 
 #drag-bar{
 	position: absolute;
     z-index: 3;
-    height: 20px;
+    height: 30px;
     width: 100%;
-    cursor: ;
+    cursor: row-resize;
     background: grey;
 }
 
