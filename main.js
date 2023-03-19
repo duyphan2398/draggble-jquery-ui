@@ -1,110 +1,110 @@
 $( document ).ready(function() {
-    const heightDragBar = $("#drag-bar").height();
-    const maxHeightDragContainer = $("body").height() - $(".header").height() - $(".footer").height();
+    const dragContainer = $("#drag-container");
+    const dragBar = $("#drag-bar");
+    const topComponent = $('div.main-top');
+    const bottomComponent =  $('div.main-bottom');
 
-    let levelOfPositions = [
+
+    const maxHeightDragContainer = $("body").height() - $(".header").height() - $(".footer").height();
+    
+
+    let levelOfDraggingPositions = [
         {
             'top': 0, 
             'bottom': maxHeightDragContainer / 2
-        },  // full panel -> middle panel
+        },  // From: full panel -> To: middle panel
 
         {
             'top': maxHeightDragContainer / 2, 
             'bottom': maxHeightDragContainer
-        }  // middle panel  -> close panel
+        }  // From: middle panel  -> To: close panel
     ];
 
-
+    /**
+     * Pre-Set height of top and bottom components
+     * 
+     * @param {*} position 
+     */
     function calculatepercent(position) {
-        console.log('Position: '+ position);
-        $('div.main-top').height(position);
-        $('div.main-bottom').height($("#drag-container").height() - position);
+        topComponent.height(position);
+        bottomComponent.height(dragContainer.height() - position);
     };
 
-    $( "#drag-bar" ).draggable({ 
+    /**
+     *  Check drag distance and back to levels df dragging position
+     * 
+     * @param {*} target 
+     * @param {*} top 
+     */
+    function checkBackingPosition(target, top) {
+        let levelOfDraggingPosition = {};
+
+        for (const levelOfDraggingPositionItem of levelOfDraggingPositions) {
+            if(levelOfDraggingPositionItem.top <= top && levelOfDraggingPositionItem.bottom >= top) {
+                levelOfDraggingPosition = { ...levelOfDraggingPositionItem };
+            }
+        }
+
+        let centerOfLevelOfDraggingPosition = levelOfDraggingPosition.top + (levelOfDraggingPosition.bottom - levelOfDraggingPosition.top) / 2;
+        
+        let newTopHeight = newBottomHeight = newDragBarTop = 0;
+        if( top < centerOfLevelOfDraggingPosition ) {
+            newTopHeight = levelOfDraggingPosition.top;
+            newBottomHeight = dragContainer.height() - levelOfDraggingPosition.top
+            newDragBarTop = levelOfDraggingPosition.top;
+        } else {
+            if(levelOfDraggingPosition.bottom === maxHeightDragContainer) {
+                newTopHeight  = levelOfDraggingPosition.bottom - dragBar.height();
+                newBottomHeight = dragContainer.height() - (Math.floor(levelOfDraggingPosition.bottom - dragBar.height()));
+                newDragBarTop = levelOfDraggingPosition.bottom - dragBar.height();
+            }else {
+                newTopHeight  = levelOfDraggingPosition.bottom;
+                newBottomHeight = dragContainer.height() - (Math.floor(levelOfDraggingPosition.bottom));
+                newDragBarTop = levelOfDraggingPosition.bottom;
+            }
+        }
+
+        topComponent.height(newTopHeight);
+        bottomComponent.height(newBottomHeight);
+        dragBar.css({
+            'top'	: newDragBarTop
+        });
+    }
+
+    function resizeWindow(){
+        dragContainer.height(maxHeightDragContainer);
+        var originalComponentHeight = (maxHeightDragContainer)/2;
+
+        topComponent.height(originalComponentHeight);
+        bottomComponent.height(originalComponentHeight);
+        dragBar.css({
+            'top'	: originalComponentHeight
+         });
+    };
+
+    dragBar.draggable({ 
         axis: "y",
         containment : ".drag-container",
         cursor: 'row-resize',
         // grid: [ 0, 100 ],
         start: function(start, ui) {   
             calculatepercent(ui.position.top);
-            console.log('Start: '+ start.target.offsetTop);
+            // console.log('Start: '+ start.target.offsetTop);
         },
         drag: function(drag, ui) {
 
             calculatepercent(ui.position.top);
-            console.log('Drag: '+ drag.target.offsetTop);
+            // console.log('Drag: '+ drag.target.offsetTop);
         },
         stop: function(stop, ui) {
+            console.log(stop.target.offsetTop);
             // Check height of position
-            checkBackingDistance(stop.target, ui.position.top);
+            checkBackingPosition(stop.target, stop.target.offsetTop);
 
             //calculatepercent(stop.target, ui.position.top);
             console.log('Stop: '+ stop.target.offsetTop);
         }
     });
-
-    function checkBackingDistance(target, top) {
-        let levelOfPosition = {};
-
-        for (const levelOfPositionItem of levelOfPositions) {
-            if(levelOfPositionItem.top <= top && levelOfPositionItem.bottom >= top) {
-                levelOfPosition = { ...levelOfPositionItem };
-            }
-        }
-
-        let centerOfLevelOfPosition = (levelOfPosition.bottom - levelOfPosition.top) / 2;
-
-
-        if( top < centerOfLevelOfPosition ){
-            // Near start 
-            $('div.main-top').height(levelOfPosition.top);
-            $('div.main-bottom').height($("#drag-container").height() - (levelOfPosition.top));
-            
-            $("#drag-bar").css({
-                'top'	: levelOfPosition.top
-            });
-
-        } else {
-            // Near end
-
-            // Checking at the close panel
-            if(levelOfPosition.bottom === maxHeightDragContainer) {
-                $('div.main-top').height(levelOfPosition.bottom - heightDragBar);
-                $('div.main-bottom').height($("#drag-container").height() - (Math.floor(levelOfPosition.bottom - heightDragBar)));
-                
-                $("#drag-bar").css({
-                    'top'	: levelOfPosition.bottom - heightDragBar
-                });
-            } else {
-                $('div.main-top').height(levelOfPosition.bottom);
-                $('div.main-bottom').height($("#drag-container").height() - (Math.floor(levelOfPosition.bottom)));
-                
-                $("#drag-bar").css({
-                    'top'	: levelOfPosition.bottom
-                });
-            } 
-        }
-        
-    }
-
-    function resizeWindow(){
-        $("#drag-container").height($("body").height() - $(".header").height() - $(".footer").height());
-        var height = (($("body").height() - $(".header").height() - $(".footer").height())/2);
-
-        $("#drag-bar").css({
-           'top'	: height,
-           'min-height': '10px'
-        });
-
-        $(".main-top").css({
-           'height'	: height,
-        });
-
-        $(".main-bottom").css({
-           'height'	: height,
-        });
-    };
 
 
     $(window).resize(function() {
