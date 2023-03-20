@@ -9,24 +9,23 @@ $( document ).ready(function() {
 
     let levelOfDraggingPositions = [
         {
-            'top': 0, 
-            'bottom': maxHeightDragContainer / 2
+            'start': maxHeightDragContainer, 
+            'end': maxHeightDragContainer / 2
         },  // From: full panel -> To: middle panel
-
         {
-            'top': maxHeightDragContainer / 2, 
-            'bottom': maxHeightDragContainer
+            'start': maxHeightDragContainer / 2, 
+            'end': 0
         }  // From: middle panel  -> To: close panel
     ];
 
     /**
      * Pre-Set height of top and bottom components
      * 
-     * @param {*} position 
+     * @param {*} positionBottom 
      */
-    function calculatepercent(position) {
-        topComponent.height(position);
-        bottomComponent.height(maxHeightDragContainer - position);
+    function calculatepercent(positionBottom) {
+        topComponent.height(maxHeightDragContainer - positionBottom);
+        bottomComponent.height(positionBottom);
     };
 
     /**
@@ -35,39 +34,39 @@ $( document ).ready(function() {
      * @param {*} target 
      * @param {*} top 
      */
-    function checkBackingPosition(target, top) {
+    function checkBackingPosition(target, positionBottom) {
         let levelOfDraggingPosition = {};
 
         for (const levelOfDraggingPositionItem of levelOfDraggingPositions) {
-            if(levelOfDraggingPositionItem.top <= top && levelOfDraggingPositionItem.bottom >= top) {
+            if(levelOfDraggingPositionItem.start >= positionBottom && levelOfDraggingPositionItem.end <= positionBottom) {
                 levelOfDraggingPosition = { ...levelOfDraggingPositionItem };
             }
         }
 
-        let centerOfLevelOfDraggingPosition = levelOfDraggingPosition.top + (levelOfDraggingPosition.bottom - levelOfDraggingPosition.top) / 2;
+        let centerOfLevelOfDraggingPosition = levelOfDraggingPosition.end + (levelOfDraggingPosition.start - levelOfDraggingPosition.end) / 2;
         
-        let newTopHeight = newBottomHeight = newDragBarTop = 0;
-        if( top < centerOfLevelOfDraggingPosition ) {
-            newTopHeight = levelOfDraggingPosition.top;
-            newBottomHeight = maxHeightDragContainer - levelOfDraggingPosition.top
-            newDragBarTop = levelOfDraggingPosition.top;
-        } else {
-            if(levelOfDraggingPosition.bottom === maxHeightDragContainer) {
-                newTopHeight  = levelOfDraggingPosition.bottom - dragBar.height();
-                newBottomHeight = maxHeightDragContainer - levelOfDraggingPosition.bottom;
-                newDragBarTop = levelOfDraggingPosition.bottom - dragBar.height();
+        let newTopComponentHeight = newBottomComponentHeight = newDragBarBottom = 0;
+        debugger;
+        if( positionBottom > centerOfLevelOfDraggingPosition ) {
+            if(levelOfDraggingPosition.start === maxHeightDragContainer) {
+                newTopComponentHeight  = maxHeightDragContainer - levelOfDraggingPosition.start;
+                newBottomComponentHeight = levelOfDraggingPosition.start - dragBar.height();
+                newDragBarBottom = levelOfDraggingPosition.start - dragBar.height();
             }else {
-                newTopHeight  = levelOfDraggingPosition.bottom;
-                newBottomHeight = maxHeightDragContainer - levelOfDraggingPosition.bottom;
-                newDragBarTop = levelOfDraggingPosition.bottom;
+                newTopComponentHeight  = maxHeightDragContainer - levelOfDraggingPosition.start;
+                newBottomComponentHeight = levelOfDraggingPosition.start;
+                newDragBarBottom = levelOfDraggingPosition.start;
             }
-
+        } else {
+            newTopComponentHeight = maxHeightDragContainer - levelOfDraggingPosition.end;
+            newBottomComponentHeight = levelOfDraggingPosition.end
+            newDragBarBottom = levelOfDraggingPosition.end;
         }
-
-        topComponent.height(newTopHeight);
-        bottomComponent.height(newBottomHeight);
+        debugger
+        topComponent.height(newTopComponentHeight);
+        bottomComponent.height(newBottomComponentHeight);
         dragBar.css({
-            'top'	: newDragBarTop
+            'top'	: newDragBarBottom - dragBar.height()
         });
     }
 
@@ -82,7 +81,7 @@ $( document ).ready(function() {
         topComponent.height(originalComponentHeight);
         bottomComponent.height(originalComponentHeight);
         dragBar.css({
-            'top'	: originalComponentHeight
+            'top'	: originalComponentHeight - dragBar.height()
          });
     };
 
@@ -95,21 +94,16 @@ $( document ).ready(function() {
         cursor: 'row-resize',
         // grid: [ 0, 100 ],
         start: function(start, ui) {   
-            calculatepercent(ui.position.top);
-            // console.log('Start: '+ start.target.offsetTop);
+            console.log(start.target.offsetTop);
+            calculatepercent(maxHeightDragContainer - start.target.offsetTop - dragBar.height());
         },
         drag: function(drag, ui) {
-
-            calculatepercent(ui.position.top);
-            // console.log('Drag: '+ drag.target.offsetTop);
+            console.log(drag.target.offsetTop);
+            calculatepercent(maxHeightDragContainer - drag.target.offsetTop - dragBar.height());
         },
         stop: function(stop, ui) {
-            console.log(stop.target.offsetTop);
             // Check height of position
-            checkBackingPosition(stop.target, stop.target.offsetTop);
-
-            //calculatepercent(stop.target, ui.position.top);
-            console.log('Stop: '+ stop.target.offsetTop);
+            checkBackingPosition(stop.target, maxHeightDragContainer - stop.target.offsetTop - dragBar.height());
         }
     });
 
