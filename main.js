@@ -46,7 +46,6 @@ $( document ).ready(function() {
         let centerOfLevelOfDraggingPosition = levelOfDraggingPosition.end + (levelOfDraggingPosition.start - levelOfDraggingPosition.end) / 2;
         
         let newTopComponentHeight = newBottomComponentHeight = newDragBarBottom = 0;
-        debugger;
         if( positionBottom > centerOfLevelOfDraggingPosition ) {
             if(levelOfDraggingPosition.start === maxHeightDragContainer) {
                 newTopComponentHeight  = maxHeightDragContainer - levelOfDraggingPosition.start;
@@ -62,7 +61,7 @@ $( document ).ready(function() {
             newBottomComponentHeight = levelOfDraggingPosition.end
             newDragBarBottom = levelOfDraggingPosition.end;
         }
-        debugger
+        
         topComponent.height(newTopComponentHeight);
         bottomComponent.height(newBottomComponentHeight);
         dragBar.css({
