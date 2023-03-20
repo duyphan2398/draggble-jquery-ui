@@ -25,8 +25,8 @@ $( document ).ready(function() {
      * @param {*} position 
      */
     function calculatepercent(position) {
-        topComponent.height(position);
-        bottomComponent.height(maxHeightDragContainer - position);
+        topComponent.height(position + (dragBar.height() / 2));
+        bottomComponent.height(maxHeightDragContainer - position - (dragBar.height() / 2));
     };
 
     /**
@@ -64,8 +64,8 @@ $( document ).ready(function() {
 
         }
 
-        topComponent.height(newTopHeight);
-        bottomComponent.height(newBottomHeight);
+        topComponent.height(newTopHeight + (dragBar.height()/2));
+        bottomComponent.height(newBottomHeight - (dragBar.height()/2));
         dragBar.css({
             'top'	: newDragBarTop
         });
@@ -79,8 +79,8 @@ $( document ).ready(function() {
         var originalComponentHeight = (maxHeightDragContainer)/2;
 
         dragContainer.height(maxHeightDragContainer);
-        topComponent.height(originalComponentHeight);
-        bottomComponent.height(originalComponentHeight);
+        topComponent.height(originalComponentHeight + (dragBar.height()/2));
+        bottomComponent.height(originalComponentHeight - (dragBar.height()/2));
         dragBar.css({
             'top'	: originalComponentHeight
          });

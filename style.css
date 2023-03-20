@@ -26,12 +26,10 @@ body,html{
 
 
 .main-top{
-    margin-bottom: 30px;
 	background: red;
 }
 
 .main-bottom{
-    margin-top: 30px;
 	background: blue;
 }
 
@@ -41,6 +39,7 @@ body,html{
     height: 30px;
     width: 100%;
     cursor: row-resize;
-    background: rgba(128, 128, 128, 0.089);
+    background: rgb(143, 255, 6);
+    border-radius: 15px 15px 0 0;
 }
 
